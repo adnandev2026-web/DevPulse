@@ -5,3 +5,6 @@ __pycache__/
 *.py[cod]
 db.sqlite3
 staticfiles/
+.neon
+.env.local
+node_modules/

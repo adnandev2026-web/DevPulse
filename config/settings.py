@@ -6,10 +6,12 @@ from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env.local")
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-this-secret-key")
-DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
+is_vercel = os.environ.get("VERCEL") == "1" or bool(os.environ.get("VERCEL_URL"))
+DEBUG = os.environ.get("DJANGO_DEBUG", "False" if is_vercel else "True").lower() == "true"
 if not DEBUG and not os.environ.get("DJANGO_SECRET_KEY"):
     raise ValueError("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is False.")
 ALLOWED_HOSTS = [
@@ -17,6 +19,10 @@ ALLOWED_HOSTS = [
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
     if host.strip()
 ]
+for vercel_host_variable in ("VERCEL_URL", "VERCEL_PROJECT_PRODUCTION_URL"):
+    vercel_host = os.environ.get(vercel_host_variable, "").strip()
+    if vercel_host and vercel_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_host)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -128,6 +134,12 @@ if not DEBUG:
         for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
         if origin.strip()
     ]
+    for vercel_host_variable in ("VERCEL_URL", "VERCEL_PROJECT_PRODUCTION_URL"):
+        vercel_host = os.environ.get(vercel_host_variable, "").strip()
+        if vercel_host:
+            vercel_origin = f"https://{vercel_host}"
+            if vercel_origin not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append(vercel_origin)
     render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
     if render_hostname:
         CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
