@@ -1,0 +1,35 @@
+.navbar{
+    background-color: #0F172A;
+    color: #FFF;
+    
+}
+.body{
+    background-color: #F8FAFC;
+}
+.otone {
+    border: 5px solid #0F172A;
+    padding: 10px;
+    margin-top: 5em;
+    /* Removed margin-left: 25% to fix the overflow bug */
+    color: #2563EB;
+}
+.second{
+    padding-top: 5em;
+}
+a{
+    cursor: pointer;
+}
+#dropdown{
+    background-color: cadetblue;
+}
+.color{
+    color: #F8FAFC;
+}
+.otoned1{
+    border: 5px dashed #0F172A;
+    padding: 0.3em;
+    margin-top: 2em;
+    margin-left: 25%;
+    background-clip: border-box;
+    color: #F8FAFC;
+}

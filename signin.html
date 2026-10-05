@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create account - DevPulse{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <h1 class="otone text-center">Create your account</h1>
+        <p class="text-center">Join groups, follow chats, and share your learning progress.</p>
+        <form method="post" data-validate novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text|safe }}</small>{% endif %}
+                    {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+            <button class="btn btn-primary btn-block" type="submit">Create account</button>
+        </form>
+        <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}">Log in</a>.</p>
+    </div>
+</div>
+{% endblock %}

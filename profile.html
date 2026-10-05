@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} - DevPulse{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <h1 class="otone">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 card-title">Profile</h2>
+                <p class="mb-1"><strong>Username:</strong> {{ profile_user.username }}</p>
+                <p class="mb-1"><strong>Name:</strong> {{ profile_user.get_full_name|default:"Not provided" }}</p>
+                <p class="mb-0"><strong>Member since:</strong> {{ profile_user.date_joined|date:"F Y" }}</p>
+            </div>
+        </div>
+        <h2 class="h4">Groups followed</h2>
+        <div class="row">
+            {% for group in followed_groups %}
+                <div class="col-12 col-md-6 mb-3">
+                    <article class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h5 card-title"><a href="{% url 'chat_detail' group.pk %}">{{ group.name }}</a></h3>
+                            <p class="card-text">{{ group.description }}</p>
+                            <p class="text-muted mb-0">{{ group.follower_count }} followers</p>
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
+                <p class="col-12 text-muted">This person has not followed any groups yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

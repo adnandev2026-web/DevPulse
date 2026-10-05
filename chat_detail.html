@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} - DevPulse{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+        <h1 class="otone">{{ group.name }}</h1>
+        <p>{{ group.description }}</p>
+        <p class="text-muted">{{ group.follower_count }} followers · Created by <a href="{% url 'profile' group.created_by.username %}">{{ group.created_by.username }}</a></p>
+
+        {% if not is_member %}
+            <div class="alert alert-info">Follow this group to view its chat and send messages.</div>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'toggle_follow' group.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'chat_detail' group.pk %}">
+                    <button class="btn btn-primary" type="submit">Follow and join chat</button>
+                </form>
+            {% else %}
+                <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'chat_detail' group.pk %}">Log in to follow</a>
+            {% endif %}
+        {% else %}
+            <form method="post" action="{% url 'toggle_follow' group.pk %}" class="mb-3">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'chat_detail' group.pk %}">
+                <button class="btn btn-outline-secondary" type="submit">Leave group</button>
+            </form>
+            <section aria-label="Group chat">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {% for message in chat_messages %}
+                            <article class="border-bottom py-2">
+                                <p class="mb-1">
+                                    <a href="{% url 'profile' message.author.username %}"><strong>{{ message.author.username }}</strong></a>
+                                    <small class="text-muted">{{ message.created_at|date:"M j, Y, g:i a" }}</small>
+                                </p>
+                                <p class="mb-0">{{ message.body|linebreaksbr }}</p>
+                            </article>
+                        {% empty %}
+                            <p class="text-muted mb-0">No messages yet. Start the conversation!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <form method="post" data-validate novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.body.id_for_label }}">Write a message</label>
+                        {{ form.body }}
+                        {% for error in form.body.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Send message</button>
+                </form>
+            </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
